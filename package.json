@@ -1,7 +1,8 @@
 {
   "name": "meld-token-checker",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "homepage": "https://0xjaqbek.github.io/meld-token-checker",
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@shadcn/ui": "^0.0.4",
