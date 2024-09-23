@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription } from "../components/ui/alert";
 
 // ABI for ERC20 token balance checking
 const minABI = [
@@ -18,13 +18,29 @@ const MeldTokenChecker = () => {
   const [isEligible, setIsEligible] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+
+  useEffect(() => {
+    checkWalletConnection();
+  }, []);
+
+  const checkWalletConnection = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length > 0) {
+        setIsWalletConnected(true);
+        setAddress(accounts[0]);
+      }
+    }
+  };
 
   const connectWallet = async () => {
     if (typeof window.ethereum !== 'undefined') {
       try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await switchToMeldChain(provider);
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setIsWalletConnected(true);
+        setAddress(accounts[0]);
+        setError('');
       } catch (err) {
         setError('Failed to connect wallet: ' + err.message);
       }
@@ -33,14 +49,13 @@ const MeldTokenChecker = () => {
     }
   };
 
-  const switchToMeldChain = async (provider) => {
-    try {
-      await provider.send('wallet_switchEthereumChain', [{ chainId: '0x13D2ECED' }]);
-    } catch (switchError) {
-      if (switchError.code === 4902) {
-        try {
-          await provider.send('wallet_addEthereumChain', [{
-            chainId: '0x13D2ECED',
+  const addMeldNetwork = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0x13d92e8d',
             chainName: 'Meld',
             nativeCurrency: {
               name: 'gMELD',
@@ -49,13 +64,14 @@ const MeldTokenChecker = () => {
             },
             rpcUrls: ['https://subnets.avax.network/meld/mainnet/rpc'],
             blockExplorerUrls: ['https://meldscan.io']
-          }]);
-        } catch (addError) {
-          setError('Failed to add Meld chain: ' + addError.message);
-        }
-      } else {
-        setError('Failed to switch to Meld chain: ' + switchError.message);
+          }]
+        });
+        setError('');
+      } catch (addError) {
+        setError('Failed to add Meld network: ' + addError.message);
       }
+    } else {
+      setError('Please install MetaMask!');
     }
   };
 
@@ -80,13 +96,21 @@ const MeldTokenChecker = () => {
 
   return (
     <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Meld Token Checker</h1>
-      <button 
-        onClick={connectWallet}
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
-      >
-        Connect Wallet
-      </button>
+      <h1 className="text-2xl font-bold mb-4">Meld Banker NFT Token Checker</h1>
+      <div className="flex gap-2 mb-4">
+        <button 
+          onClick={connectWallet}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          {isWalletConnected ? 'Wallet Connected' : 'Connect Wallet'}
+        </button>
+        <button 
+          onClick={addMeldNetwork}
+          className="bg-purple-500 text-white px-4 py-2 rounded"
+        >
+          Add MELD Network
+        </button>
+      </div>
       <input
         type="text"
         value={address}
