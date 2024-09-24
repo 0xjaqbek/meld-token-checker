@@ -1,11 +1,14 @@
 const express = require('express');
 const axios = require('axios');
 
+require('dotenv').config();  // Load environment variables from .env
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
-const TELEGRAM_GROUP_ID = 'YOUR_GROUP_CHAT_ID'; // e.g., -123456789
+// Use environment variables for sensitive data
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_GROUP_ID = process.env.TELEGRAM_GROUP_ID;
 
 // API to generate one-time-use Telegram invite link
 app.get('/generate-link', async (req, res) => {
