@@ -81,8 +81,8 @@ const MeldTokenChecker = () => {
     setIsEligible(null);
 
     try {
-      const provider = new ethers.providers.JsonRpcProvider('https://go.getblock.io/736afce1c7ad4b2e9e887f5d8f94981e');
-      const tokenAddress = '0x99903e8eC87b9987bD6289DF8eff178d6E533561';
+      const provider = new ethers.providers.JsonRpcProvider('https://subnets.avax.network/meld/mainnet/rpc');
+      const tokenAddress = '0x333000Dca02578EfE421BE77FF0aCC0F947290f0';
       const contract = new ethers.Contract(tokenAddress, minABI, provider);
       const balance = await contract.balanceOf(address);
       
