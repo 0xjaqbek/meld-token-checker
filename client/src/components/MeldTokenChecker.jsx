@@ -94,6 +94,7 @@ const MeldTokenChecker = () => {
       if (eligible) {
         const response = await fetch('/generate-link');  // Assuming the server is hosted on the same domain
         const data = await response.json();
+        console.log('Invite Link Response:', data);
         if (response.ok) {
           setInviteLink(data.inviteLink);
         } else {
