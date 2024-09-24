@@ -19,6 +19,7 @@ const MeldTokenChecker = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [inviteLink, setInviteLink] = useState('');  // Store invite link
 
   useEffect(() => {
     checkWalletConnection();
@@ -86,7 +87,20 @@ const MeldTokenChecker = () => {
       const contract = new ethers.Contract(tokenAddress, minABI, provider);
       const balance = await contract.balanceOf(address);
       
-      setIsEligible(balance.gt(0));
+      const eligible = balance.gt(0);
+      setIsEligible(eligible);
+
+      // If eligible, fetch the Telegram invite link from the server
+      if (eligible) {
+        const response = await fetch('/generate-link');  // Assuming the server is hosted on the same domain
+        const data = await response.json();
+        if (response.ok) {
+          setInviteLink(data.inviteLink);
+        } else {
+          setError('Failed to get invite link');
+        }
+      }
+
     } catch (err) {
       setError('Error checking eligibility: ' + err.message);
     } finally {
@@ -133,7 +147,18 @@ const MeldTokenChecker = () => {
       {isEligible !== null && (
         <Alert variant={isEligible ? "default" : "destructive"}>
           <AlertDescription>
-            {isEligible ? "You are eligible!" : "You are not eligible."}
+            {isEligible ? (
+              <>
+                You are eligible! <br />
+                {inviteLink && (
+                  <a href={inviteLink} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">
+                    Click here to join the Telegram group
+                  </a>
+                )}
+              </>
+            ) : (
+              "You are not eligible."
+            )}
           </AlertDescription>
         </Alert>
       )}
