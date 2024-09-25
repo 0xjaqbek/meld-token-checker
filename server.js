@@ -4,7 +4,7 @@ const axios = require('axios');
 require('dotenv').config();  // Load environment variables from .env
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 // Use environment variables for sensitive data
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
