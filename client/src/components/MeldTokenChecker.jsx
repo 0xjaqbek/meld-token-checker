@@ -93,6 +93,7 @@ const MeldTokenChecker = () => {
       // If eligible, fetch the Telegram invite link from the server
       if (eligible) {
         try {
+          console.log('Invite Link Response:should be given');
           const response = await fetch('https://tokengate-8acc7ede28d5.herokuapp.com/generate-link');  
           if (!response.ok) {
             throw new Error('Failed to get invite link from the server');
